@@ -1,9 +1,11 @@
 <template>
-<div class="">
-    <div @click="toggleShow" :class="(show) ? 'active' : ''">
-        <img :src="icon">{{ item.name }}
+<div class="tree">
+    <div @click="toggleShow" :class="typeClass">
+        <div class="icon" :class="typeClass"></div>
+        <a v-if="item.type == 'link'" :href="item.target">{{ item.name }}</a>
+        <span v-else class="item-name">{{ item.name }}</span>
     </div>
-    <div v-if="item.type == 'directory'" v-show="show" class="directory-contents">
+    <div v-if="item.type == 'directory'" class="contents" :class="typeClass">
         <DisplayItem v-for="i in item.contents" :item="i" :key="i.name" />
     </div>
 </div>
@@ -16,20 +18,7 @@ export default {
         item: Object
     },
     data() {
-        let img;
-        switch (this.item.type) {
-            case 'directory':
-                img = './static/icons/folder-solid.svg'
-                break
-            case 'file':
-                img = './static/icons/file-solid.svg'
-                break
-            case 'link':
-                img = './static/icons/link-solid.svg'
-                break
-        }
         return {
-            icon: img,
             show: false
         }
     },
@@ -37,20 +26,48 @@ export default {
         toggleShow: function() {
             this.show = !this.show
         }
+    },
+    computed: {
+        typeClass: function() {
+            return (this.show) ? this.item.type + ' active' : this.item.type
+        }
     }
 }
 </script>
 
 <style scoped>
-    img {
-        max-width: 1rem;
-        max-height: 1rem;
+    .icon {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
         margin-right: 0.2rem;
+        margin-bottom: -0.1rem;
+        background-repeat: no-repeat;
+        background-position: left bottom;
     }
-    .directory-contents {
-        margin-left: 1rem;
+    .icon.file {
+        background-image: url('/static/icons/file-solid.svg');
     }
-    .active {
+    .icon.link {
+        background-image: url('/static/icons/link-solid.svg');
+    }
+    .file.active, .link.active {
         background-color: rgba(143, 211, 248, 0.3);
+    }
+    .icon.directory {
+        background-image: url('/static/icons/folder-solid.svg');
+    }
+    .icon.directory.active {
+        background-image: url('/static/icons/folder-open-solid.svg');
+    }
+    .contents.directory {
+        margin-left: 1rem;
+        display: none;
+    }
+    .contents.directory.active {
+        display: block;
+    }
+    .item-name {
+        cursor: default;
     }
 </style>
