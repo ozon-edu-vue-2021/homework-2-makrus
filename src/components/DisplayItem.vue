@@ -1,41 +1,36 @@
 <template>
-<div class="tree">
-    <div @click="toggleShow" :class="typeClass">
-        <div class="icon" :class="typeClass"></div>
-        <a v-if="item.type == 'link'" :href="item.target">{{ item.name }}</a>
-        <span v-else class="item-name">{{ item.name }}</span>
+    <div :class="'tree-item ' + item.type">
+        <div @click="toggleActive" :class="isActive">
+            <div class="icon" :class="isActive"></div>
+            <a v-if="item.type == 'link'" :href="item.target">{{ item.name }}</a>
+            <span v-else class="item-name">{{ item.name }}</span>
+        </div>
+        <div v-if="item.type == 'directory'" class="contents" :class="isActive">
+            <DisplayItem v-for="i in item.contents" :item="i" :key="i.name" />
+        </div>
     </div>
-    <div v-if="item.type == 'directory'" class="contents" :class="typeClass">
-        <DisplayItem v-for="i in item.contents" :item="i" :key="i.name" />
-    </div>
-</div>
 </template>
 
 <script>
-export default {
-    name: 'DisplayItem',
-    props: {
-        item: Object
-    },
-    data() {
-        return {
-            show: false
-        }
-    },
-    methods:{
-        toggleShow: function() {
-            this.show = !this.show
-        }
-    },
-    computed: {
-        typeClass: function() {
-            return (this.show) ? this.item.type + ' active' : this.item.type
+    export default {
+        name: 'DisplayItem',
+        props: {
+            item: Object
+        },
+        data() {
+            return {
+                isActive: ''
+            }
+        },
+        methods: {
+            toggleActive: function() {
+                this.isActive = (this.isActive) ? '' : 'active'
+            }
         }
     }
-}
 </script>
 
-<style scoped>
+<style>
     .icon {
         display: inline-block;
         width: 1rem;
@@ -45,26 +40,26 @@ export default {
         background-repeat: no-repeat;
         background-position: left bottom;
     }
-    .icon.file {
-        background-image: url('/static/icons/file-solid.svg');
+    .file .icon {
+        background-image: url('/static/icons/file-solid.svg') !important;
     }
-    .icon.link {
-        background-image: url('/static/icons/link-solid.svg');
+    .link .icon {
+        background-image: url('/static/icons/link-solid.svg') !important;
     }
-    .file.active, .link.active {
-        background-color: rgba(143, 211, 248, 0.3);
+    .file .active, .link .active {
+        background-color: rgba(143, 211, 248, 0.3) !important;
     }
-    .icon.directory {
+    .directory .icon {
         background-image: url('/static/icons/folder-solid.svg');
     }
-    .icon.directory.active {
+    .directory .icon.active {
         background-image: url('/static/icons/folder-open-solid.svg');
     }
-    .contents.directory {
+    .directory .contents {
         margin-left: 1rem;
         display: none;
     }
-    .contents.directory.active {
+    .directory .contents.active {
         display: block;
     }
     .item-name {
